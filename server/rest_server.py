@@ -26,6 +26,21 @@ class ArticleService(Resource):
             code = 404
         return make_response(jsonify(result), code)
 
+    def delete(self, article_id):
+        """
+        Delete an article.
+        :param article_id: The id to delete
+        :return: Resource
+        """
+        article = Article.query.get(article_id)
+        if article:
+            db.session.delete(article)
+            code = 204
+        else:
+            code = 404
+
+        return None, code
+
     def put(self):
         """
         Create an article.
