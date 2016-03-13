@@ -1,36 +1,43 @@
 from flask import Flask
 from flask_restful import Resource, Api
-from sqlalchemy import create_engine
-
-#Create a engine for connecting to SQLite3.
-#Assuming salaries.db is in your app root folder
-
-e = create_engine('sqlite:///salaries.db')
+from article.articles import db, Article
 
 app = Flask(__name__)
 api = Api(app)
 
 
-class Departments_Meta(Resource):
+class ArticleService(Resource):
+
+    def get(self, article_id):
+        article = Article.query.get(article_id)
+        if article:
+            result = {"id": article.id, "headline": article.headline, "body": article.story_body}
+            response = 200
+        else:
+            result = {}
+            response = 404
+        return result, response
+
+
+class ArticleServiceMeta(Resource):
+
     def get(self):
-        #Connect to databse
-        conn = e.connect()
-        #Perform query and return JSON data
-        query = conn.execute("select distinct DEPARTMENT from salaries")
-        return {'departments': [i[0] for i in query.cursor.fetchall()]}
+        articles = Article.query.all()
+        result = []
 
+        for a in articles:
+            article = {"id": a.id, "headline": a.headline}
+            result.append(article)
 
-class Departmental_Salary(Resource):
-    def get(self, department_name):
-        conn = e.connect()
-        query = conn.execute("select * from salaries where Department='%s'"%department_name.upper())
-        #Query the result and get cursor.Dumping that data to a JSON is looked by extension
-        result = {'data': [dict(zip(tuple (query.keys()) ,i)) for i in query.cursor]}
         return result
-        #We can have PUT,DELETE,POST here. But in our API GET implementation is sufficient
 
-api.add_resource(Departmental_Salary, '/dept/<string:department_name>')
-api.add_resource(Departments_Meta, '/departments')
+
+api.add_resource(ArticleServiceMeta, '/articles')
+api.add_resource(ArticleService, '/articles/<int:article_id>')
 
 if __name__ == '__main__':
-     app.run(debug=True)
+    db.create_all()
+    article = Article("Headline", "Cat does something")
+    db.session.add(article)
+    db.session.commit()
+    app.run(debug=True)
