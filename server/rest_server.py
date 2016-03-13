@@ -35,6 +35,7 @@ class ArticleService(Resource):
         article = Article.query.get(article_id)
         if article:
             db.session.delete(article)
+            db.session.commit()
             code = 204
         else:
             code = 404
