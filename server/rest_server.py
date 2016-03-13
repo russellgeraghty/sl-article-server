@@ -1,9 +1,9 @@
 from flask import Flask, jsonify, make_response, request
-from flask_restful import Resource, Api, abort
 from flask import json
+from flask_restful import Resource, Api, abort
 
-from article_model.article_models import db, Article
-from article_view.article_views import simple_article, list_articles
+from model.article_models import db, Article
+from view.article_views import simple_article, list_articles
 
 app = Flask(__name__)
 api = Api(app)
@@ -13,7 +13,7 @@ class ArticleService(Resource):
 
     def get(self, article_id):
         """
-        Get an article_model.
+        Get an model.
         :return: Resource
         :type article_id: int
         """
@@ -41,7 +41,7 @@ class ArticleService(Resource):
 
     def post(self):
         """
-        Update an article_model.
+        Update an model.
         :return:
         """
         article_dict = json.loads(request.data)
