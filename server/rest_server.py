@@ -5,9 +5,6 @@ from flask_restful import Resource, Api, abort
 from model.article_models import db, Article
 from view.article_views import simple_article, list_articles
 
-app = Flask(__name__)
-api = Api(app)
-
 
 class ArticleService(Resource):
 
@@ -82,9 +79,14 @@ class ArticleServiceMeta(Resource):
         return list_articles(articles)
 
 
-api.add_resource(ArticleServiceMeta, '/articles')
-api.add_resource(ArticleService, '/article/<int:article_id>', '/article')
-
-if __name__ == '__main__':
+def main():
+    """
+    Start the app server.
+    :return:
+    """
+    app = Flask(__name__)
+    api = Api(app)
+    api.add_resource(ArticleServiceMeta, '/articles')
+    api.add_resource(ArticleService, '/article/<int:article_id>', '/article')
     db.create_all()
     app.run(debug=True)
